@@ -135,13 +135,13 @@ function GerarIngresso() {
 // --->>> COMPONENTE ValidarIngresso <<<---
 function ValidarIngresso() {
   const [status, setStatus] = useState("");
-  const [scannerOpen, setScannerOpen] = useState(false); // Controla a exibição do scanner
+  const [scannerOpen, setScannerOpen] = useState(false);
 
   const handleScan = async (data) => {
     if (data) {
       try {
         // Ajusta a lógica de extração do CPF e UUID conforme o formato do seu QR code
-        const [cpf, uuid] = data.split(":"); 
+        const [cpf, uuid] = data.split(":");
         const response = await axios.post(
           "http://localhost:5000/validar_ingresso",
           {
@@ -154,14 +154,14 @@ function ValidarIngresso() {
         console.error(error);
         setStatus("inválido");
       } finally {
-        setScannerOpen(false); // Fecha o scanner após a validação
+        setScannerOpen(false);
       }
     }
   };
 
   const handleError = (error) => {
     console.error(error);
-    setScannerOpen(false); // Fecha o scanner em caso de erro
+    setScannerOpen(false);
   };
 
   const handleOpenScanner = () => {
@@ -171,14 +171,14 @@ function ValidarIngresso() {
   return (
     <div>
       <h2>Validar Ingresso</h2>
-      {scannerOpen ? ( // Renderiza o scanner condicionalmente
+      {scannerOpen ? (
         <QrReader
           onResult={handleScan}
           onError={handleError}
           style={{ width: "100%" }}
         />
       ) : (
-        <button onClick={handleOpenScanner}>Abrir Scanner</button> // Botão para abrir o scanner
+        <button onClick={handleOpenScanner}>Abrir Scanner</button>
       )}
       {status && <p>Status: {status}</p>}
     </div>
