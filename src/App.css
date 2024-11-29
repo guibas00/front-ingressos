@@ -66,3 +66,29 @@ body {
   width: 320px; 
   height: 240px;
 }
+
+
+
+.ingressos-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.ingresso-card {
+  background-color: #fff;
+  border-radius: 5px;
+  overflow: hidden; /* Para evitar que a imagem transborde */
+  width: calc(50% - 10px); /* Dois cards por linha com espaçamento */
+  box-sizing: border-box; /* Inclui padding e border no cálculo da largura */
+}
+
+.ingresso-card img {
+  width: 100%;
+  height: auto;
+}
+
+.ingresso-info {
+  padding: 10px;
+  color: #000;
+}
