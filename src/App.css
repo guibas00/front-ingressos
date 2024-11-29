@@ -62,33 +62,31 @@ body {
   cursor: pointer;
 }
 
-.scanner-container video {
-  width: 320px; 
-  height: 240px;
-}
-
-
-
 .ingressos-container {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
+  justify-content: center; 
 }
 
 .ingresso-card {
   background-color: #fff;
   border-radius: 5px;
-  overflow: hidden; /* Para evitar que a imagem transborde */
-  width: calc(50% - 10px); /* Dois cards por linha com espaçamento */
-  box-sizing: border-box; /* Inclui padding e border no cálculo da largura */
-}
-
-.ingresso-card img {
-  width: 100%;
-  height: auto;
-}
-
-.ingresso-info {
-  padding: 10px;
+  padding: 20px;
+  width: 300px; /* Largura fixa para os cards */
+  box-sizing: border-box;
   color: #000;
+  text-align: center;
+  border: 1px solid #ccc; /* Adiciona uma borda */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Adiciona uma sombra */
+}
+
+.ingresso-card button {
+  background-color: #000;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  margin-top: 10px; 
 }

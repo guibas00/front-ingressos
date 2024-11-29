@@ -135,7 +135,123 @@ function GerarIngresso() {
 
 // --->>> COMPONENTE ValidarIngresso <<<---
 function ValidarIngresso() {
-  // ... (código do componente ValidarIngresso) ...
+  const [status, setStatus] = useState("");
+  const [scannerOpen, setScannerOpen] = useState(false);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    let stream;
+    let interval;
+
+    const startCamera = async () => {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: "environment",
+            width: { ideal: 640 }, // Largura ideal
+            height: { ideal: 480 }, // Altura ideal
+          },
+        });
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      } catch (error) {
+        console.error("Erro ao acessar a câmera:", error);
+      }
+    };
+
+    const stopCamera = () => {
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+      }
+    };
+
+    const scanQRCode = () => {
+      const canvas = canvasRef.current;
+      const video = videoRef.current;
+      if (
+        canvas &&
+        video &&
+        video.readyState === video.HAVE_ENOUGH_DATA &&
+        video.videoWidth > 0
+      ) {
+        const context = canvas.getContext("2d");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = context.getImageData(
+          0,
+          0,
+          canvas.width,
+          canvas.height
+        );
+        const code = jsQR(imageData.data, imageData.width, imageData.height);
+        if (code) {
+          try {
+            // Analisa o JSON do QR code
+            const qrCodeData = JSON.parse(code.data);
+
+            // Extrai o CPF e o UUID do objeto JSON
+            const cpf = qrCodeData.cpf;
+            const uuid = qrCodeData.uuid;
+
+            axios
+              .post(
+                "https://flask-ingressos-production.up.railway.app/validar_ingresso",
+                {
+                  cpf,
+                  uuid,
+                }
+              )
+              .then((response) => {
+                setStatus(response.data.status);
+              })
+              .catch((error) => {
+                console.error(error);
+                setStatus("inválido");
+              })
+              .finally(() => {
+                stopCamera();
+                setScannerOpen(false);
+              });
+          } catch (error) {
+            console.error("Erro ao analisar o JSON do QR code:", error);
+            setStatus("QR code inválido");
+          }
+        }
+      }
+    };
+
+    if (scannerOpen) {
+      startCamera();
+      interval = setInterval(scanQRCode, 500); // Escaneia a cada 500ms
+    }
+
+    return () => {
+      clearInterval(interval);
+      stopCamera();
+    };
+  }, [scannerOpen]);
+
+  const handleOpenScanner = () => {
+    setScannerOpen(true);
+  };
+
+  return (
+    <div className="scanner-container">
+      <h2>Validar Ingresso</h2>
+      {scannerOpen ? (
+        <div>
+          <video ref={videoRef} autoPlay muted />
+          <canvas ref={canvasRef} style={{ display: "none" }} />
+        </div>
+      ) : (
+        <button onClick={handleOpenScanner}>Abrir Scanner</button>
+      )}
+      {status && <p>Status: {status}</p>}
+    </div>
+  );
 }
 // --->>> FIM DO COMPONENTE ValidarIngresso <<<---
 
@@ -172,11 +288,10 @@ function ConsultarIngressos() {
         <button type="submit">Consultar</button>
       </form>
 
-      <div className="ingressos-container"> {/* Container para os cards */}
+      <div className="ingressos-container">
         {ingressos.length > 0 &&
           ingressos.map((ingresso, index) => (
-            <div className="ingresso-card" key={index}> {/* Card para cada ingresso */}
-              <img src={ingresso.image} alt="QR Code do Ingresso" />
+            <div className="ingresso-card" key={index}>
               <div className="ingresso-info">
                 <p>Nome: {ingresso.Nome}</p>
                 <p>Evento: {ingresso.Evento}</p>
@@ -184,6 +299,9 @@ function ConsultarIngressos() {
                 <p>Hora: {ingresso.Hora}</p>
                 <p>Local: {ingresso.Local}</p>
               </div>
+              <button onClick={() => alert(ingresso.image)}>
+                Ver QR Code
+              </button>
             </div>
           ))}
       </div>
