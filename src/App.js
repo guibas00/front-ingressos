@@ -166,7 +166,13 @@ function ValidarIngresso() {
     const scanQRCode = () => {
       const canvas = canvasRef.current;
       const video = videoRef.current;
-      if (canvas && video) {
+      if (
+        canvas &&
+        video &&
+        video.readyState === video.HAVE_ENOUGH_DATA &&
+        video.videoWidth > 0
+      ) {
+        // Verifica se o vídeo está pronto e tem largura válida
         const context = canvas.getContext("2d");
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
@@ -175,7 +181,7 @@ function ValidarIngresso() {
           0,
           0,
           canvas.width,
-          canvas.height,
+          canvas.height
         );
         const code = jsQR(imageData.data, imageData.width, imageData.height);
         if (code) {
@@ -193,7 +199,7 @@ function ValidarIngresso() {
                 {
                   cpf,
                   uuid,
-                },
+                }
               )
               .then((response) => {
                 setStatus(response.data.status);
@@ -255,7 +261,7 @@ function ConsultarIngressos() {
     event.preventDefault();
     try {
       const response = await axios.get(
-        `https://flask-ingressos-production.up.railway.app/ingressos/${cpf}`,
+        `https://flask-ingressos-production.up.railway.app/ingressos/${cpf}`
       );
       setIngressos(response.data);
     } catch (error) {
