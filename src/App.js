@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import { QrReader } from "react-qr-reader";
+import jsQR from "jsqr";
 import "./App.css"; // Importa o arquivo CSS
 
 function App() {
@@ -137,33 +137,93 @@ function GerarIngresso() {
 function ValidarIngresso() {
   const [status, setStatus] = useState("");
   const [scannerOpen, setScannerOpen] = useState(false);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
 
-  const handleScan = async (data) => {
-    if (data) {
+  useEffect(() => {
+    let stream;
+    let interval;
+
+    const startCamera = async () => {
       try {
-        // Ajusta a lógica de extração do CPF e UUID conforme o formato do seu QR code
-        const [cpf, uuid] = data.split(":");
-        const response = await axios.post(
-          "https://flask-ingressos-production.up.railway.app/validar_ingresso",
-          {
-            cpf,
-            uuid,
-          }
-        );
-        setStatus(response.data.status);
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment" }, // Solicita câmera traseira
+        });
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
       } catch (error) {
-        console.error(error);
-        setStatus("inválido");
-      } finally {
-        setScannerOpen(false);
+        console.error("Erro ao acessar a câmera:", error);
       }
-    }
-  };
+    };
 
-  const handleError = (error) => {
-    console.error(error);
-    setScannerOpen(false);
-  };
+    const stopCamera = () => {
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+      }
+    };
+
+    const scanQRCode = () => {
+      const canvas = canvasRef.current;
+      const video = videoRef.current;
+      if (canvas && video) {
+        const context = canvas.getContext("2d");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = context.getImageData(
+          0,
+          0,
+          canvas.width,
+          canvas.height,
+        );
+        const code = jsQR(imageData.data, imageData.width, imageData.height);
+        if (code) {
+          try {
+            // Analisa o JSON do QR code
+            const qrCodeData = JSON.parse(code.data);
+
+            // Extrai o CPF e o UUID do objeto JSON
+            const cpf = qrCodeData.cpf;
+            const uuid = qrCodeData.uuid;
+
+            axios
+              .post(
+                "https://flask-ingressos-production.up.railway.app/validar_ingresso",
+                {
+                  cpf,
+                  uuid,
+                },
+              )
+              .then((response) => {
+                setStatus(response.data.status);
+              })
+              .catch((error) => {
+                console.error(error);
+                setStatus("inválido");
+              })
+              .finally(() => {
+                stopCamera();
+                setScannerOpen(false);
+              });
+          } catch (error) {
+            console.error("Erro ao analisar o JSON do QR code:", error);
+            setStatus("QR code inválido");
+          }
+        }
+      }
+    };
+
+    if (scannerOpen) {
+      startCamera();
+      interval = setInterval(scanQRCode, 500); // Escaneia a cada 500ms
+    }
+
+    return () => {
+      clearInterval(interval);
+      stopCamera();
+    };
+  }, [scannerOpen]);
 
   const handleOpenScanner = () => {
     setScannerOpen(true);
@@ -173,12 +233,10 @@ function ValidarIngresso() {
     <div className="scanner-container">
       <h2>Validar Ingresso</h2>
       {scannerOpen ? (
-        <QrReader
-          facingMode="environment"
-          onResult={handleScan}
-          onError={handleError}
-          style={{ width: "100%" }}
-        />
+        <div>
+          <video ref={videoRef} autoPlay muted />
+          <canvas ref={canvasRef} style={{ display: "none" }} />
+        </div>
       ) : (
         <button onClick={handleOpenScanner}>Abrir Scanner</button>
       )}
@@ -197,7 +255,7 @@ function ConsultarIngressos() {
     event.preventDefault();
     try {
       const response = await axios.get(
-        `https://flask-ingressos-production.up.railway.app/ingressos/${cpf}`
+        `https://flask-ingressos-production.up.railway.app/ingressos/${cpf}`,
       );
       setIngressos(response.data);
     } catch (error) {
