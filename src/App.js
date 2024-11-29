@@ -45,7 +45,7 @@ function GerarIngresso() {
     event.preventDefault();
     try {
       const response = await axios.post(
-        "http://flask-ingressos-production.up.railway.app/gerar_ingresso",
+        "http://flask-ingressos.railway.internal/gerar_ingresso",
         {
           nome,
           evento,
@@ -143,7 +143,7 @@ function ValidarIngresso() {
         // Ajusta a lógica de extração do CPF e UUID conforme o formato do seu QR code
         const [cpf, uuid] = data.split(":");
         const response = await axios.post(
-          "http://flask-ingressos-production.up.railway.app/validar_ingresso",
+          "http://flask-ingressos.railway.internal/validar_ingresso",
           {
             cpf,
             uuid,
@@ -173,6 +173,7 @@ function ValidarIngresso() {
       <h2>Validar Ingresso</h2>
       {scannerOpen ? (
         <QrReader
+          facingMode='environment'
           onResult={handleScan}
           onError={handleError}
           style={{ width: "100%" }}
@@ -195,7 +196,7 @@ function ConsultarIngressos() {
     event.preventDefault();
     try {
       const response = await axios.get(
-        `http://flask-ingressos-production.up.railway.app/ingressos/${cpf}`
+        `http://flask-ingressos.railway.internal/ingressos/${cpf}`
       );
       setIngressos(response.data);
     } catch (error) {
