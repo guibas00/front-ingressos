@@ -195,14 +195,14 @@ function ValidarIngresso() {
 
             // Extrai o CPF e o UUID do objeto JSON
             const cpf = qrCodeData.cpf;
-            const uuid = qrCodeData.uuidQr;
+            const uuidQr = qrCodeData.uuidQr;
 
             axios
               .post(
                 "https://flask-ingressos-production.up.railway.app/validar_ingresso",
                 {
                   cpf,
-                  uuid,
+                  uuidQr,
                 }
               )
               .then((response) => {
