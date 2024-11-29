@@ -283,6 +283,13 @@ function ConsultarIngressos() {
     setShowModal(false);
   };
 
+  const handleSendWhatsapp = () => {
+    // Encode the URL to handle special characters
+    const encodedQrCodeUrl = encodeURIComponent(selectedQrCode);
+    const whatsappLink = `https://wa.me/?text=Olá!%20Segue%20o%20link%20para%20o%20seu%20ingresso:%20${encodedQrCodeUrl}`;
+    window.open(whatsappLink, "_blank");
+  };
+
   return (
     <div className="form-container">
       <h2>Consultar Ingressos</h2>
@@ -293,7 +300,7 @@ function ConsultarIngressos() {
             type="text"
             id="cpf"
             value={cpf}
-            onChange={(e) => setCpf(e.target.value)}
+            onChange={(e) => setCpf(e.target.value)} 
           />
         </div>
         <button type="submit">Consultar</button>
@@ -324,6 +331,8 @@ function ConsultarIngressos() {
               &times;
             </span>
             <img src={selectedQrCode} alt="QR Code do Ingresso" />
+
+            <button onClick={handleSendWhatsapp}>Enviar por WhatsApp</button>
           </div>
         </div>
       )}
