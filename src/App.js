@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import axios from "axios";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { QrReader } from "react-qr-reader";
+import "./App.css"; // Importa o arquivo CSS
 
 function App() {
   return (
     <BrowserRouter>
-      <div>
-        <nav>
+      <div className="app-container">
+        <nav className="navbar">
           <ul>
             <li>
               <Link to="/gerar">Gerar Ingresso</Link>
@@ -62,7 +63,7 @@ function GerarIngresso() {
   };
 
   return (
-    <div>
+    <div className="form-container">
       <h2>Gerar Ingresso</h2>
       <form onSubmit={handleSubmit}>
         <div>
@@ -169,11 +170,11 @@ function ValidarIngresso() {
   };
 
   return (
-    <div>
+    <div className="scanner-container">
       <h2>Validar Ingresso</h2>
       {scannerOpen ? (
         <QrReader
-          facingMode='environment'
+          facingMode="environment"
           onResult={handleScan}
           onError={handleError}
           style={{ width: "100%" }}
@@ -205,7 +206,7 @@ function ConsultarIngressos() {
   };
 
   return (
-    <div>
+    <div className="form-container">
       <h2>Consultar Ingressos</h2>
       <form onSubmit={handleSubmit}>
         <div>
