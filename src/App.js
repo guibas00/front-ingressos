@@ -259,6 +259,8 @@ function ValidarIngresso() {
 function ConsultarIngressos() {
   const [cpf, setCpf] = useState("");
   const [ingressos, setIngressos] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedQrCode, setSelectedQrCode] = useState("");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -270,6 +272,15 @@ function ConsultarIngressos() {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleOpenModal = (qrCodeUrl) => {
+    setSelectedQrCode(qrCodeUrl);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
   };
 
   return (
@@ -299,12 +310,23 @@ function ConsultarIngressos() {
                 <p>Hora: {ingresso.Hora}</p>
                 <p>Local: {ingresso.Local}</p>
               </div>
-              <button onClick={() => alert(ingresso.image)}>
+              <button onClick={() => handleOpenModal(ingresso.image)}>
                 Ver QR Code
               </button>
             </div>
           ))}
       </div>
+
+      {showModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <span className="close-button" onClick={handleCloseModal}>
+              &times;
+            </span>
+            <img src={selectedQrCode} alt="QR Code do Ingresso" />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
