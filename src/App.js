@@ -147,7 +147,11 @@ function ValidarIngresso() {
     const startCamera = async () => {
       try {
         stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "environment" }, // Solicita câmera traseira
+          video: { 
+            facingMode: "environment", 
+            width: { ideal: 640 }, // Largura ideal
+            height: { ideal: 480 }  // Altura ideal
+          }
         });
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
@@ -191,7 +195,7 @@ function ValidarIngresso() {
 
             // Extrai o CPF e o UUID do objeto JSON
             const cpf = qrCodeData.cpf;
-            const uuid = qrCodeData.uuid;
+            const uuid = qrCodeData.uuidQr;
 
             axios
               .post(
