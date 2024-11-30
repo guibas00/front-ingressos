@@ -1,0 +1,88 @@
+.app-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .input-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .cpf-input {
+    flex: 1;
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .search-button {
+    padding: 10px 15px;
+    font-size: 1em;
+    color: #fff;
+    background-color: #000000;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .search-button:hover {
+    background-color: #030183;
+  }
+  
+  .cards-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s;
+  }
+  
+  .card:hover {
+    transform: translateY(-10px);
+  }
+  
+  .card-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .card-content {
+    padding: 15px;
+  }
+  
+  .card-content h3 {
+    margin: 0 0 10px;
+    font-size: 1.5em;
+    color: #333;
+  }
+  
+  .card-content p {
+    margin: 5px 0;
+    font-size: 1em;
+    color: #666;
+  }
+  
+  .card-image {
+    width: 150px; /* Largura fixa */
+    height: 150px; /* Altura fixa */
+    object-fit: contain; /* Garante que o QR Code seja exibido corretamente */
+    margin: 10px auto; /* Centraliza horizontalmente */
+    display: block; /* Necessário para margin auto funcionar */
+    border: 1px solid #ddd; /* Opcional: borda para destacar o QR Code */
+    border-radius: 5px; /* Bordas arredondadas */
+  }
+  
