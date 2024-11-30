@@ -1,0 +1,18 @@
+.scanner-container {
+    background-color: #fff; 
+    padding: 20px;
+    border-radius: 5px;
+    color: #000; /* Define a cor do texto como preto dentro dos containers */
+  }
+  
+  .scanner-container video {
+    display: block;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  
+  .scanner-container p {
+    margin-top: 15px;
+    text-align: center;
+  }
+  
